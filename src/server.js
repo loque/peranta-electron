@@ -1,6 +1,7 @@
 'use strict'
 
-const Server = require('peranta/lib/server')
+const Server = require('peranta/server')
+const Router = require('peranta/router')
 const Scheduler = require('./scheduler')
 
 function Transport(app, ipcMain)
@@ -47,7 +48,7 @@ Transport.prototype.broadcast = function broadcast(channel, res)
 
 function create(app, ipcMain)
 {
-    return new Server(new Transport(app, ipcMain))
+    return new Server(new Transport(app, ipcMain), new Router())
 }
 
 module.exports = { create }

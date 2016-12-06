@@ -1,6 +1,6 @@
 'use strict'
 
-const Client = require('peranta/lib/client')
+const Client = require('peranta/client')
 
 function Transport(ipcRenderer)
 {

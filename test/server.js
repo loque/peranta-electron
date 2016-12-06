@@ -1,7 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect
-const Server = require('../lib/server')
+const Server = require('../server')
 const { app, ipcMain } = require('electron')
 
 describe('Server', function()

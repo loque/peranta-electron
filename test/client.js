@@ -1,7 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect
-const Client = require('../lib/client')
+const Client = require('../client')
 
 describe('Client', function()
 {

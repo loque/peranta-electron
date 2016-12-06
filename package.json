@@ -1,11 +1,13 @@
 {
   "name": "peranta-electron",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "npm-run-all test-client test-server",
     "test-client": "./node_modules/.bin/mocha ./test/client.js",
-    "test-server": "./node_modules/.bin/electron-mocha ./test/server.js"
+    "test-server": "./node_modules/.bin/electron-mocha ./test/server.js",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -23,12 +25,18 @@
   },
   "homepage": "https://github.com/loque/peranta-electron#readme",
   "dependencies": {
-    "peranta": "^0.1.0"
+    "peranta": "^0.1.1"
   },
   "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.8",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-2": "^6.18.0",
     "chai": "^3.5.0",
     "electron": "^1.4.10",
     "electron-mocha": "^3.2.1",
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "npm-run-all": "^3.1.2",
+    "webpack": "^1.13.3"
   }
 }
