@@ -1,4 +1,5 @@
 const webpack = require('webpack')
+const PROD = JSON.parse(process.env.PROD_ENV || '0')
 
 module.exports = {
      entry: {
@@ -22,4 +23,14 @@ module.exports = {
          'peranta/router': 'peranta/router',
          'peranta/client': 'peranta/client',
      },
+     plugins: PROD ? [
+         new webpack.optimize.UglifyJsPlugin({
+             compress: {
+                 warnings: false,
+             },
+             output: {
+                 comments: false,
+             },
+         }),
+     ] : [],
  }
