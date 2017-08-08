@@ -5,7 +5,7 @@
 import Server from 'peranta/server'
 import Router from 'peranta/router'
 import Scheduler from './scheduler'
-import isPlainObject from 'lodash.isplainobject'
+import uuid from 'uuid'
 
 function Transport(app: { on: Function }, ipcMain: { on: Function })
 {
@@ -19,21 +19,21 @@ function Transport(app: { on: Function }, ipcMain: { on: Function })
     this.ipcMain = ipcMain
 
     this.broadcastScheduler = new Scheduler()
-    this.webContents = []
+    this.webContents = {}
 
-    this.app.on('web-contents-created', (event, webContents) =>
+    this.app.on('web-contents-created', (event, webContent) =>
     {
-		const webContentsIdx = this.webContents.length
+		const webContentId = uuid.v4()
 
-        webContents.on('did-finish-load', () =>
+        webContent.on('did-finish-load', () =>
         {
-            this.webContents.push(webContents)
+            this.webContents[webContentId] = webContent
             this.broadcastScheduler.start()
         })
 
-		webContents.on('destroyed', () =>
+		webContent.on('destroyed', () =>
 		{
-			delete this.webContents[webContentsIdx]
+			delete this.webContents[webContentId]
 		})
     })
 }
@@ -47,15 +47,9 @@ Transport.prototype.broadcast = function broadcast(channel: string, res)
 {
     this.broadcastScheduler.push(() =>
     {
-        this.webContents.forEach(webcontent =>
+        Object.keys(this.webContents).forEach(webContentId =>
         {
-			if (
-				webcontent === undefined
-				|| !isPlainObject(webcontent)
-				|| !webcontent.hasOwnProperty('send')
-			) return
-
-            webcontent.send(channel, res)
+            this.webContents[webContentId].send(channel, res)
         })
 
         return Promise.resolve()
