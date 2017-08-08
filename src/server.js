@@ -1,10 +1,13 @@
+// @flow
+
 'use strict'
 
-const Server = require('peranta/server')
-const Router = require('peranta/router')
-const Scheduler = require('./scheduler')
+import Server from 'peranta/server'
+import Router from 'peranta/router'
+import Scheduler from './scheduler'
+import isPlainObject from 'lodash.isplainobject'
 
-function Transport(app, ipcMain)
+function Transport(app: { on: Function }, ipcMain: { on: Function })
 {
     if (app === undefined) throw new TypeError('Transport.constructor() expects to receive Electron\'s app as the first argument')
     if (typeof app.on !== 'function') throw new TypeError('Transport.constructor() expects Electron\'s app to implement .on()')
@@ -20,25 +23,38 @@ function Transport(app, ipcMain)
 
     this.app.on('web-contents-created', (event, webContents) =>
     {
+		const webContentsIdx = this.webContents.length
+
         webContents.on('did-finish-load', () =>
         {
             this.webContents.push(webContents)
             this.broadcastScheduler.start()
         })
+
+		webContents.on('destroyed', () =>
+		{
+			delete this.webContents[webContentsIdx]
+		})
     })
 }
 
-Transport.prototype.on = function on(channel, callback)
+Transport.prototype.on = function on(channel: string, callback: Function)
 {
     this.ipcMain.on(channel, (event, req) => callback(event, req))
 }
 
-Transport.prototype.broadcast = function broadcast(channel, res)
+Transport.prototype.broadcast = function broadcast(channel: string, res)
 {
     this.broadcastScheduler.push(() =>
     {
         this.webContents.forEach(webcontent =>
         {
+			if (
+				webcontent === undefined
+				|| !isPlainObject(webcontent)
+				|| !webcontent.hasOwnProperty('send')
+			) return
+
             webcontent.send(channel, res)
         })
 
@@ -46,9 +62,9 @@ Transport.prototype.broadcast = function broadcast(channel, res)
     })
 }
 
-function create(app, ipcMain)
+function create(app: { on: Function }, ipcMain: { on: Function })
 {
     return new Server(new Transport(app, ipcMain), new Router())
 }
 
-module.exports = { create }
+export default { create }

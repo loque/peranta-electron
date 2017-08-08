@@ -1,3 +1,5 @@
+// @flow
+
 'use strict'
 
 const PUSH = 'push'
@@ -16,7 +18,7 @@ const defaultRetryConfig = {
     }
 
 */
-function Scheduler(config = {})
+export default function Scheduler(config: Object = {})
 {
     const stack = []
 
@@ -28,9 +30,7 @@ function Scheduler(config = {})
         action.__method = method
 
         action.__retry = Object.assign(
-            {
-                method: method
-            },
+            { method },
             defaultRetryConfig,
             config
         )
@@ -40,9 +40,9 @@ function Scheduler(config = {})
 
     this.addAction = action =>
     {
-        let job = { action }
+        const job = { action }
 
-        let jobPromise = new Promise((resolve, reject) =>
+        const jobPromise = new Promise((resolve, reject) =>
         {
             job.__resolve = resolve
             job.__reject = reject
@@ -96,13 +96,13 @@ function Scheduler(config = {})
     {
         if (!shouldRun) return isRunning = false
 
-        let job = stack.shift()
+        const job = stack.shift()
 
         if (!job) return isRunning = false
 
         isRunning = true
 
-        let executionPromise = this.execute(job)
+        const executionPromise = this.execute(job)
 
         if (!config.sync)
         {
@@ -134,7 +134,7 @@ function Scheduler(config = {})
                     && job.action.__retry.attempts == job.action.__retry.limit
                 )
                 {
-                    job.__reject('retry limit reached: ' + job.action.__retry.limit)
+                    job.__reject(`retry limit reached: ${  job.action.__retry.limit}`)
                     return
                 }
 
@@ -161,5 +161,3 @@ function Scheduler(config = {})
         pause: this.pause,
     }
 }
-
-module.exports = Scheduler

@@ -3,12 +3,12 @@ const PROD = JSON.parse(process.env.PROD_ENV || '0')
 
 module.exports = {
      entry: {
-         server: './src/server.js',
          client: './src/client.js',
      },
      output: {
-         path: './',
+         path: './dist',
          filename: '[name].js',
+		 library: 'PerantaElectron',
          libraryTarget: 'umd',
      },
      module: {

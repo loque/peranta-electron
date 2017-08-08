@@ -1,8 +1,10 @@
+// @flow
+
 'use strict'
 
-const Client = require('peranta/client')
+import Client from 'peranta/client'
 
-function Transport(ipcRenderer)
+function Transport(ipcRenderer: { on: Function, send: Function })
 {
     if (
         ipcRenderer === undefined
@@ -26,9 +28,9 @@ Transport.prototype.emit = function emit(channel, req)
     this.ipcRenderer.send(channel, req)
 }
 
-function create(ipcRenderer)
+function create(ipcRenderer: { on: Function, send: Function })
 {
     return new Client(new Transport(ipcRenderer))
 }
 
-module.exports = { create }
+export default { create }
